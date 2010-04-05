@@ -255,7 +255,10 @@ class MusicbrainzAutomatcher
       ## More than one artist?
       if (matched_mbid != result.entity.artist.id.uuid and matched_mbid)
         @logger.info("  Found more then one artist with a high score, giving up.")
-        matched_mbid = false unless @ignore_duplicate
+        unless @ignore_duplicate
+          matched_mbid = false 
+          puts "setting false"
+        end
       else
         matched_mbid = result.entity.artist.id.uuid
       end
@@ -324,7 +327,7 @@ class MusicbrainzAutomatcher
     if most_similar < 85
       @logger.info("  Closest match is less than 85% similar")
       return false
-    elsif similarities[most_similar].length != 1
+    elsif similarities[most_similar].length != 1 and !@ignore_duplicate
       @logger.info("  More then one shortest distance, giving up")
       return false
     else
