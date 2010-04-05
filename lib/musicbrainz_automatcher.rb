@@ -15,6 +15,7 @@ class MusicbrainzAutomatcher
   attr_accessor :logger
   attr_accessor :network_timeout
   attr_accessor :network_retries
+  attr_accessor :ignore_duplicate
   attr_reader :cache
   attr_reader :mbws
   
@@ -22,6 +23,7 @@ class MusicbrainzAutomatcher
     # Configuration options
     @network_timeout = options[:network_timeout] || 15  # seconds
     @network_retries = options[:network_retries] || 3
+    @ignore_duplicate = options[:ignore_duplicate] || false
     
     # Create MusicBrainz webservice
     host = options[:musicbrainz_host] || 'musicbrainz.org'
@@ -253,7 +255,7 @@ class MusicbrainzAutomatcher
       ## More than one artist?
       if (matched_mbid != result.entity.artist.id.uuid and matched_mbid)
         @logger.info("  Found more then one artist with a high score, giving up.")
-        return false
+        matched_mbid = false unless @ignore_duplicate
       else
         matched_mbid = result.entity.artist.id.uuid
       end
